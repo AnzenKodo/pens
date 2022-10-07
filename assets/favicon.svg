@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg viewBox="0 0 500 500" width="500" height="500" xmlns="http://www.w3.org/2000/svg">
+  <ellipse style="stroke: rgb(0, 0, 0); stroke-width: 0px;" cx="315.003" cy="250" rx="250" ry="249.939" transform="matrix(0.999756, 0.022085, 0, 1.000244, -64.986864, -8.455109)"/>
+  <rect x="90" y="150" width="30" height="210" style="stroke: rgb(0, 0, 0); fill: rgb(0, 87, 183);"/>
+  <rect x="120" y="120" width="90" height="30" style="stroke: rgb(0, 0, 0); fill: rgb(0, 87, 183);"/>
+  <rect x="210" y="150" width="30" height="60" style="stroke: rgb(0, 0, 0); fill: rgb(0, 87, 183);"/>
+  <rect x="90" y="210" width="120" height="30" style="stroke: rgb(0, 0, 0); stroke-width: 0px; fill: rgb(0, 87, 183);"/>
+  <rect x="300" y="90" width="90" height="300" style="stroke: rgb(0, 0, 0); fill: rgb(0, 87, 183);"/>
+</svg>
