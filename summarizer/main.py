@@ -78,6 +78,37 @@ def index():
         content: '|';
       }
     </style>
+    <script type="module">
+      const type = (text) => {
+        const output = document.querySelector('.output-text code');
+        output.innerHTML = "";
+        let i = 0;
+        const add = () => {
+          output.innerHTML += text[i++];
+          if (text[i] === undefined) clearInterval(timeout);
+        };
+        const timeout = setInterval(add, 50);
+      };
+
+      const getPrompt = async (text, width) => {
+        const res = await fetch(
+          `http://127.0.0.1:5000/api?prompt=${text}&width=${width}`
+        );
+        return res.text();
+      };
+
+      const form = document.querySelector('form');
+      form.addEventListener('submit', (event) => {
+        event.preventDefault();
+      });
+      form.addEventListener('submit', async () => {
+        const text = document.querySelector('.textarea');
+        const width = document.querySelector('.width input');
+        const prompt = await getPrompt(text.textContent, width.value);
+        type(prompt);
+      });
+
+     </script>
   </head>
   <body>
     <main>
@@ -97,18 +128,6 @@ def index():
         </p>
       </div>
     </main>
-    <script src="script.js" type="module">
-        const type = (text) => {
-            const output = document.querySelector('.output-text code');
-            let i = 0;
-            const add = () => {
-                output.innerHTML += text[i++];
-                if (text[i] === undefined) clearInterval(timeout);
-            };
-            const timeout = setInterval(add, 50);
-        };
-        type('Hello World!');
-    </script>
   </body>
 </html>
 """
@@ -142,7 +161,7 @@ def root():
 def api():
   prompt = urllib.parse.unquote(request.args.get('prompt'))
   width = int(request.args.get('width'))
-  return query(prompt, width)[0]["summary_text"]
+  return query(prompt, width)
 
 if __name__ == '__main__':
   app.run()
