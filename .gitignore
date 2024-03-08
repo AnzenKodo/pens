@@ -3,5 +3,5 @@ lib64
 .ipynb_checkpoints
 
 node_modules/
-
+build/
 *.exe

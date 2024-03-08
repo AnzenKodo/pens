@@ -1,0 +1,20 @@
+<html>
+<script src="main.js"></script>
+    <body>
+        <label>Op: <input id="op"></label></br>
+        <label>Num1: <input id="num1"></label></br>
+        <label>Num2: <input id="num2"></label></br>
+        <input type="submit" id="submit" />
+        <p id="ans"></p>
+        <script>
+            const op = document.querySelector("#op").value
+            const num1 = document.querySelector("#num1").value
+            const num2 = document.querySelector("#num2").value
+            const submit = document.querySelector("#submit")
+            const ans = document.querySelector("#ans").innerHTML
+            submit.addEventListener("click", ()=> {
+                calculate(num1, num2, op);
+            })
+        </script>
+    </body>
+</html>
