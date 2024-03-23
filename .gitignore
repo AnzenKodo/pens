@@ -5,3 +5,4 @@ lib64
 node_modules/
 build/
 *.exe
+*.out
