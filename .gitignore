@@ -1,7 +1,7 @@
 lib/
 lib64
 .ipynb_checkpoints
-
+venv/
 node_modules/
 build/
 *.exe
