@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en-US">
+    <head>
+        <title>{{ config.name }} - {{ config.description }}</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="{{ config.description }}">
+
+        <link rel="manifest" href="{{ url_for("static", filename="manifest.json") }}">
+        <meta name="theme-color" content="{{ config.theme }}"/>
+        <link rel="icon" type="image/png" href="{{ config["icons"][0]["src"] }}">
+
+        <meta property="og:type" content="website">
+        <meta property="og:title" content="{{ config.name }}">
+        <meta property="og:image" content="{{ config.logo }}">
+        <meta property="og:image:alt" content="{{ config.name }} logo">
+        <meta property="og:description" content="{{ config.description }}">
+		<style>
+			*,::after,::before{box-sizing:border-box}html{font-family:system-ui,'Segoe UI',Roboto,Helvetica,Arial,sans-serif,'Apple Color Emoji','Segoe UI Emoji';line-height:1.15;-webkit-text-size-adjust:100%;-moz-tab-size:4;tab-size:4}body{margin:0}hr{height:0;color:inherit}abbr[title]{text-decoration:underline dotted}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:ui-monospace,SFMono-Regular,Consolas,'Liberation Mono',Menlo,monospace;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit}button,input,optgroup,select,textarea{font-family:inherit;font-size:100%;line-height:1.15;margin:0}button,select{text-transform:none}[type=button],[type=reset],[type=submit],button{-webkit-appearance:button}::-moz-focus-inner{border-style:none;padding:0}:-moz-focusring{outline:1px dotted ButtonText}:-moz-ui-invalid{box-shadow:none}legend{padding:0}progress{vertical-align:baseline}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}
+			:root {
+				/* bg-fg */
+				--red-black: #F8AFAF;
+				--blue-black: #82D3F7;
+				--yellow-black: #fde047;
+				--white-blue: #0075ff;
+				--green-black: #90EE02;
+				--gray: #f4f4f4;
+				--button: #0C3E88;
+				--blue: #0075ff;
+				--lightblue: #82D3F7;
+				--lightlightblue: #9cd9f4;
+				--green: #90EE02;
+				--red: #F8AFAF;
+			}
+			body {
+				padding: 0em 1.5em;
+			}
+			a {
+				text-decoration: none;
+				color: var(--white-blue)
+			}
+			a:hover, a:focus {
+				text-decoration: underline;
+			}
+			a:active {
+				background: var(--white-blue);
+				color: white;
+			}
+			a:active:has(h1) {
+				background: none;
+				color: var(--white-blue);
+			}
+			a:hover:has(h1), a:focus:has(h1) {
+				text-decoration: none;
+			}
+			input, optgroup, select, textarea {
+				font-family:ui-monospace, SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
+				text-overflow:ellipsis;
+			}
+
+			button {
+				background: var(--white-blue);
+				color: white;
+				margin: .2rem 0;
+				border: 1px solid var(--white-blue);
+				border-radius: 10px;
+				padding: .2rem .4rem .3rem .4rem;
+				font-weight: bold;
+			}
+			button:hover {
+				outline: 2px solid black;
+			}
+			button:active {
+				background: var(--blue-black);
+			}
+			button:disabled {
+				background: var(--gray);
+				border: 1px solid black;
+				color: black;
+				outline: none;
+			}
+			button:disabled:active {
+				background: var(--gray);
+			}
+
+			input[type=checkbox]:disabled {
+				cursor: not-allowed;
+			}
+
+			[formmethod="dialog"] {
+				background: white;
+				color: var(--white-blue);
+			}
+
+			table {
+				border-collapse: separate;
+				border-spacing: 0;
+				margin: 1rem auto;
+				font-size: 1.2rem;
+			}
+			tr:nth-child(even) {
+				background: var(--gray);
+			}
+			tr:nth-child(odd) {
+				background: white;
+			}
+			tr:last-child td {
+				border-bottom: 1px solid black;
+			}
+			th {
+				border: solid var(--white-blue);
+				border-width: 3px 3px 3px 0;
+				padding: .2em .3em;
+			}
+			th:nth-child(1) {
+				border-width: 3px;
+			}
+			td {
+				border-left: 1px solid black;
+				border-right: 1px solid black;
+				padding: .1rem .5rem;
+			}
+			table tr td:fist-child {
+				text-align: center;
+			}
+			input[type=checkbox] {
+				margin-top: .2rem;
+				height: 1.5rem;
+				width: 1.5rem;
+			}
+			tr:nth-child(1) {
+				position: sticky;
+				top: 0;
+			}
+			td:has([type=checkbox]) {
+				text-align: center;
+			}
+			tr:has(td input:checked) {
+				background: var(--lightlightblue);
+			}
+			tr:has(td input:checked):nth-child(even) {
+  				background: var(--blue-black);
+			}
+		</style>
+    </head>
+    <body>
+		{% if url_for(request.endpoint) != '/login' %}
+        <header>
+			<a style="display: flex; margin-top: .8rem;" href="{{ url_for("login") }}">
+		        <img style="height: 3em;" src="{{ config["icons"][0]["src"] }}" alt="{{ config.name }} logo"> 
+				<h1 style="margin: .15em 0 0 0;">{{ config.name }}</h1>
+			</a>
+        </header>
+		{% endif %}
+        <main>
+			{% with messages = get_flashed_messages() %}
+				{% if messages %}
+				<p style="color: red; font-size: 1.5em; font-weight: bold; text-align: center;">{{ messages[0] }}</p>
+				{% endif %}
+			{% endwith %}
+            {% block main %}
+            {% endblock %}
+        </main>
+        <footer style="text-align: center;">
+            <p style="margin: 2em 0 0 0;">Project of <a href="http://theemcoe.org/">Theem College of Engineering</a></p>
+            <p style="margin-top: .5em">Made by
+                <a href="https://youtube.com/@Hemant_Gupta.">Hemant Gupta</a>,
+                <a href="https://AnzenKodo.github.io">Aman Varma</a>,
+                <a href="https://github.com/Ashish75585">Ashish Yadav</a> and
+                <a href="https://github.com/krishna00100">Krishna Yadav</a>
+            </p>
+        </footer>
+        <script>
+            {% include "comp/htmx.js" %}
+            document.body.addEventListener('htmx:beforeSwap', (event) => {
+				const status = event.detail.xhr.status;
+				if(status === 500){
+					alert("Error 500: Could Not Find Resource.");
+				}				
+				if(status === 405){
+					alert("Error 405: Wrong method is used to send request.");
+				}
+			})
+        </script>
+    </body>
+</html>

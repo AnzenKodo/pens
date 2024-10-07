@@ -1,0 +1,110 @@
+{% import "comp/macro.html" as m %}
+
+{% extends "base.html" %}
+{% block main %}
+<style>
+li {
+	list-style: none;
+	font-size: 1.2rem;
+	margin-top: .3rem;
+}
+ul {
+	padding: 0;
+}
+td {
+	text-align: center;
+}
+td[scope="col"] {
+  font-weight: bold;
+  text-align: left;
+  border-left: 3px solid var(--blue);
+  border-right: 3px solid var(--blue);
+}
+tr:last-child td[scope="col"] {
+  border-bottom: 3px solid var(--blue);
+}
+tr:last-child {
+	font-weight: bold;
+}
+tr td:last-child {
+	font-weight: bold;
+}
+input[type=checkbox]:disabled {
+	accent-color: var(--blue);
+}
+tr:has(.attended) {
+	background: var(--lightblue);;
+}
+tr:has(.attended):nth-child(odd) {
+	background: var(--lightlightblue);
+}
+</style>
+
+{% include "comp/search.html" %}
+
+<div id="student-info" style="display: flex; justify-content: center; align-items: center">
+	<img style="height: 8rem; margin-right: 1rem;" 
+	src="{{ url_for("static", filename="student-profile.svg") }}" 
+	alt="profile photo of student" />
+	<ul>
+		<li><strong>Name:</strong> {{ student[3] }}</strong></li>
+		<li><strong>GR Number:</strong> {{ student[2] }}</li>
+		<li><strong>Roll No:</strong> {{ student[1] }}</strong></li>
+		<li><strong>Semester:</strong> {{ student[0] }}</li> 
+	</ul>
+</div>
+
+<table>
+	<tr>
+		<th>Subject</th>
+		<th>Today
+		<th>Week
+		<th>Month
+		<th>Quarter
+		<th>Total
+	</tr>
+	{% for subject, result in results.items() %}
+	{% if subject == "Total" %}
+		{% set key = "class_total" %}
+	{% else %}
+		{% set key = "subject_total" %}
+	{% endif %}
+	<tr>
+		<td scope="col">{{ subject }}</td>
+		<td
+			{% if subject != "Total" and result[0] %}
+			class="attended"
+			{% endif %}
+		>
+			{{ result["today"] }}
+		</td>
+		<td>{{ result["week"] }}	<small>({{ m.get_percentage(result["week"], result[key]["week"]) }}%)</small>
+		<td>{{ result["month"] }} 	<small>({{ m.get_percentage(result["month"], result[key]["month"]) }}%)</small>
+		<td>{{ result["quarter"] }} <small>({{ m.get_percentage(result["quarter"], result[key]["quarter"]) }}%)</small>
+		<td>{{ result["total"] }} 	<small>({{ m.get_percentage(result["total"], result[key]["total"]) }}%)</small>
+	</tr>
+	{% endfor %}
+</table>
+
+<button 
+	style="
+		text-align: center;
+		margin: 0 auto;
+		padding: .5rem 1rem;
+		border-radius: 20px;
+		display: block;
+		background: var(--white-blue);
+		color: white;
+		font-size: 1.3rem;
+		font-weight: bold;
+	"
+	onclick="
+		navigator.share({
+			title: '{{ config.name }}',
+			text: 'See attendance of {{ student[1] }}.{{ student[3] }} on {{ config.name }}.',
+			url: '{{ url_for(request.endpoint, _external=True) }}?gr_no={{ student[2] }}'
+		})
+	">
+	🔗 SHARE
+</button>
+{% endblock %}

@@ -1,0 +1,257 @@
+{% import "comp/vars.html" as v %}
+<table>
+	<script type="module">
+		function changeIndex(ele, value) {
+			if (!value) return
+			const select = document.querySelector(ele);
+			const values = Array.from(select.options).map(val => val.value);
+			select.selectedIndex = values.indexOf(value);
+		}
+		changeIndex("[name='selected_sem']", "{{ selected_sem }}")
+		changeIndex("[name='selected_subject']", "{{ selected_subject }}")
+
+		const selectAll = document.querySelector("tr th input");
+		const table_buttons = Array.from(document.querySelectorAll(".table_buttons"))
+
+		const table_buttons_disabled = (bool) => {
+			table_buttons.forEach(ele => ele.disabled = bool)
+		}
+
+		selectAll.addEventListener("change", (event) => {
+			const selectedStd = Array.from(document.querySelectorAll(".selected_std"))
+			if (event.target.checked) {
+				selectedStd.forEach((ele) => {ele.checked = true})
+				table_buttons_disabled(false);
+			} else {
+				selectedStd.forEach((ele) => {ele.checked = false})
+				table_buttons_disabled(true);
+			}
+		})
+		const selectedStd = Array.from(document.querySelectorAll(".selected_std"))
+		selectedStd.map(ele => {
+			ele.addEventListener("change", (event) => {
+				const selectedStdBool = selectedStd.map(ele => ele.checked)
+				if (!event.target.checked) {
+					selectAll.checked = false;
+					table_buttons_disabled(true);
+					if (selectedStdBool.includes(true)) {
+						table_buttons_disabled(false);
+					}
+				}
+				else {
+						table_buttons_disabled(false);
+					if (!selectedStdBool.includes(false)) {
+						selectAll.checked = true;
+					}
+				}
+			})
+		})
+
+		const dialog = document.querySelector("dialog")
+
+		const email_button = document.querySelector(".email_button")
+		email_button.addEventListener("click", () => {
+			const selected_rows = Array.from(document.querySelectorAll(".selected_std:checked"))
+
+			let gr_nos = []
+			const message = selected_rows.map(ele => {
+				const info = JSON.parse(ele.value)
+				if (!info[4]) return
+
+				gr_nos.push(info[1])
+				return `${info[0]}. ${info[2]} → <a href="mailto:${info[4]}">${info[4]}</a>`;
+			}).join("\n").trim()
+			
+			if (!message) {
+				dialog.innerHTML = `<p>No E-Mail has been selected!</p>
+				<form method="dialog" style="text-align: right">
+					<button>Close</button>
+				</form>`
+				dialog.showModal()
+				return
+			}
+
+			dialog.innerHTML = `<p style="margin-bottom: .5em">E-Mail will be send to these students:</p>
+			<pre style="margin-top: .5em">${message}</pre>
+			<form method="dialog">
+				<lable>with Subject:
+					<textarea name="email_subject" style="display: block; margin: .5em 0 1em 0; width: 100%">
+{{-config.email_subject-}}
+					</textarea>
+				<lable>and Message will be:
+					<small style="display: block">
+						<span style="color: red">*</span>Message must include <code>{name}</code>, <code>{roll_no}</code>, <code>{link}</code>
+					</small>
+					<textarea name="email_message" style="display: block; margin: .5em 0 1em 0; width: 100% ; height: 5em;">
+{{- config.email_message -}}</textarea>
+				</lable>
+				<div style="text-align: right">
+					<button
+						type="button"
+						name="email_send"
+						hx-post="{{ url_for("admin_email", gr_nos="") }}${gr_nos}"
+						hx-include="[name=email_message], [name=email_subject], [name=selected_sem]"
+						hx-target="dialog"
+						>Send</button>
+					<button formmethod="dialog">Close</button>
+				</div>
+			</form>`;
+			htmx.process(document.querySelector('[name=email_send]'))
+			dialog.showModal()
+		})
+
+		const message_button = document.querySelector(".message_button")
+		message_button.addEventListener("click", () => {
+			const selected_rows = Array.from(document.querySelectorAll(".selected_std:checked"))
+
+			const message = selected_rows.map(ele => {
+				const info = JSON.parse(ele.value)
+				return info[0] + ". " + info[2];
+			}).join("\n")
+
+			dialog.innerHTML = `<p style="margin-bottom: 0.3em;">Message:</p>
+			<textarea class="copy_message" rows="10" cols="40">
+{{- config.copy_message -}}\n\n${message}
+</textarea>
+			<form method="dialog" style="text-align: right">
+				<button type="button" onclick="
+					document.querySelector('.copy_message').select();
+					document.execCommand('copy');
+					this.innerHTML = 'Coped!'
+					">Copy</button>
+				<button formmethod="dialog">Close</button>
+			</form>`;
+			dialog.showModal()
+		})
+	</script>
+	<tr>
+		<td colspan="100" style="border: 1px solid; background: white; text-align: center; padding: .5rem .5rem; border: 3px solid var(--white-blue); border-bottom: 0;">
+			<label style="font-size: 1.3em;">
+				Semester: <select 
+					name="selected_sem"
+					hx-post="{{ url_for('admin') }}"
+					hx-include="[name='selected_date']"
+					hx-target="table"
+					hx-swap="outerHTML"
+					>
+					{% for sem in sems %}
+					<option value="{{ sem }}">{{ sem }}</option>
+					{% endfor %}
+				</select>
+			</label>
+			<label style="margin-right: 1em; font-size: 1.3em;">
+				Subject: 
+				<select 
+					name="selected_subject"
+					hx-post="{{ url_for('admin') }}"
+					hx-include="[name='selected_sem'], [name=selected_date], [name=selected_subject]"
+					hx-swap="outerHTML"
+					hx-target="table"
+					style="text-align: center;" 
+					>
+					{% if subs %}
+					{% for key, value in subs.items() %}
+					<option value="{{ key }}">{{ value }}</option>
+					{% endfor %}
+					<option>Total</option>
+					{% else %}
+					<option value="">No Subjects in Semester</option>
+					{% endif %}
+				</select>
+			</label>
+			<button
+				class="table_buttons email_button"
+				disabled>📧 E-Mail</button>
+			<button
+				class="table_buttons message_button"
+				disabled>📤 Message</button>
+			<button onclick="window.print()">🖨️ Print</button>
+			<div id="table_show_buttons">
+                {% for key, value in v.ths.items() %}
+                <lable style="margin-bottom: .2em; font-size: .8em; font-size: 1em;">
+                	<input type="checkbox" name="{{ key }}"
+                		style="vertical-align: middle; height: 1em; width: 1em;"
+                		hx-post={{ url_for('admin') }} 
+						hx-swap="outerHTML"
+                		hx-include="[name={{key}}], [name='selected_sem'], [name=selected_date], [	name=selected_subject]"
+                		hx-target="table"
+                		{% if not cookies[key] %}
+                		checked
+                		{% endif %} value=""
+                	>
+                	<input type="hidden" name="{{ key }}" value=1>
+                	<span style="vertical-align: sub;">{{ value }}</span>
+                </lable>
+                {% endfor %}
+			</div>
+		</td>
+	</tr>
+	<tr class="table_header">
+		<th><input type="checkbox" class="select_all"></th>
+		{% for key, value in v.ths.items() %}			
+		{% if not cookies[key] %}
+
+			{% if key == "th_roll_no" %}
+			<th style="width: 1em;">
+			{{ value }}
+			</th>
+
+			{% elif key == "th_name" %}
+			<th style="min-width: 10em;">{{ value }}</th>
+
+			{% elif key == "th_presenty" %}
+				{% if selected_subject != "Total" %}
+				<th 
+					hx-include="[name='selected_sem'], [name=selected_date], [name=selected_subject]"
+					hx-swap="outerHTML"
+					hx-target="table"
+				>
+					<label>
+						Presenty
+						<input 
+							name="selected_date" type="date" value="{{ selected_date }}" 
+							hx-post="{{ url_for('admin') }}"
+							style="display: block; width: 6.5rem; font-size: .8rem; font-weight: bold; margin-top: .3em"
+							>
+					</label>
+				</th>
+				{% endif %}
+
+			{% elif key == "th_week" %}
+			<th>
+				{{ value }}
+				<small style="display: block">Max: {{ students_total["week"] }}</small>
+			</th>
+			{% elif key == "th_week" %}
+			<th>
+				{{ value }}
+				<small style="display: block">Max: {{ students_total["week"] }}</small>
+			</th>
+			{% elif key == "th_month" %}
+			<th>
+				{{ value }}
+				<small style="display: block">Max: {{ students_total["month"] }}</small>
+			</th>
+			{% elif key == "th_quarter" %}
+			<th>
+				{{ value }}
+				<small style="display: block">Max: {{ students_total["quarter"] }}</small>
+			</th>
+			{% elif key == "th_total" %}
+			<th>
+				{{ value }}
+				<small style="display: block">Max: {{ students_total["total"] }}</small>
+			</th>
+
+
+			{% else %}
+			<th>{{ value }}</th>
+			{% endif %}
+
+		{% endif %}
+		{% endfor %}
+	</tr>
+	{% for student in students %}
+	{% include "admin/row.html" %}
+	{% endfor %}
+</table>

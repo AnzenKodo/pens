@@ -1,0 +1,51 @@
+{
+  "name": "Filly Agioro Blog",
+  "short_name": "Filly Blog",
+  "version": "0.1",
+  "version_name": "child",
+  "theme_color": "#00eab5",
+  "background_color": "#000",
+  "display": "standalone",
+  "start_url": "/",
+  "url": "https://fillyblog.vercel.app/",
+  "lang": "English",
+  "description": "This is my Blog where I write about my own world.",
+  "scope": "/",
+  "orientation": "portrait",
+  "default_locale": "en",
+  "content_security_policy": "default-src/logo 'self'",
+	"offline_enabled": true,
+  "omnibox": {
+    "keyword": "fab"
+	},
+	"screenshots": [
+		{
+				"src": "/dist/screenshot.png",
+				"sizes": "564x700",
+				"type": "image/png"
+		}
+	],
+  "icons": [
+    {
+			"src": "/dist/logo/android-chrome-144x144.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/dist/logo/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    },
+    {
+      "src": "/dist/logo/favicon-32x32.png",
+      "sizes": "32x32",
+      "type": "image/png"
+    },
+    {
+      "src": "/dist/logo/favicon-16x16.png",
+      "sizes": "16x16",
+      "type": "image/png"
+    }
+  ]
+}

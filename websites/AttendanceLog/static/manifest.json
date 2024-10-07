@@ -1,0 +1,20 @@
+{
+    "name": "AttendanceLog",
+    "short_name": "AttendanceLog",
+    "description": "A morden attendance management system.",
+    "start_url": "/",
+	"theme_color": "#82D3F7",
+	"background_color": "#fff",
+    "orientation": "portrait",
+    "display": "standalone",
+	"icons": [
+		{
+		  "src": "/static/logo.png",
+		  "sizes": "500x500",
+		  "type": "image/png"
+		}
+	],
+	"copy_message": "Following students have low attendance:",
+	"email_subject": "Low Attendance for message!!!",
+	"email_message": "{roll_no}. {name} this message is sent because of your low attendance please see {link} for more info."
+}

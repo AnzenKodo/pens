@@ -1,0 +1,108 @@
+@charset "UTF-8";
+
+@font-face {
+	src: url(/dist/font/dogica.otf);
+	font-family: "DogicaRegular";
+	font-display: swap;
+}
+
+$brand-color: #00eab5;
+$bg-color: black;
+$font-color: white;
+$border: 2px dashed $brand-color;
+
+::selection {
+	background: $brand-color;
+	color: $font-color;
+}
+
+body {
+	font-family: "DogicaRegular", monospace;
+	background: $bg-color;
+	color: $font-color;
+	text-align: center;
+	line-height: 1.9em;
+}
+
+.title {
+	font-size: 1.5em;
+	color: $brand-color;
+}
+
+.center {
+	max-width: 35em;
+	border: $border;
+	margin: 1em auto;
+}
+
+a {
+	text-decoration: none;
+	color: $brand-color;
+}
+
+.content {
+	font-family: sans-serif;
+	font-size: 1.5em;
+	text-align: left;
+	margin: .5em;
+}
+
+img {
+	max-width: 100%;
+	max-height: 15em;
+	margin: auto;
+	display: block;
+}
+
+blockquote {
+	font-style: italic;
+	font-size: .8em;
+	border-left: $border;
+	padding-left: .5em;
+}
+
+code {
+	border: $border;
+	border-radius: 5px;
+}
+
+pre {
+	border: $border;
+	overflow-x: auto;
+	white-space: pre-line;
+	padding: .5em;
+}
+
+hr {
+	border: $border;
+}
+
+table {
+	font-size: .8em;
+	margin-left: auto;
+	margin-right: auto;
+	border-collapse: collapse;
+}
+
+th {
+	border: 2px solid $font-color;
+	background-color: $brand-color;
+	color: black;
+	padding: .3em;
+}
+
+td {
+	border: $border;
+	padding: .2em;
+}
+
+footer {
+	background: $brand-color;
+	color: $bg-color;
+	padding: .1em;
+	@extend .center;
+
+	a {
+		color: $bg-color;
+	}
+}

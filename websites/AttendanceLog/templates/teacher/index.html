@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+{% block main %}
+<style>
+	#teacher-info > ul > li {
+		list-style: none;
+		font-size: 1.2rem;
+		margin-top: .3rem;
+	}
+	#teacher-info > ul {
+		padding: 0;
+	}
+	table td:first-child, table td:nth-child(4) {
+		text-align: center;
+	}
+	tr td:last-child {
+		background: white;
+		border: none;
+		padding-right:.1em;
+	}
+</style>
+<script>
+	function showDilog(info) {
+		const dialog = document.querySelector("dialog");
+
+		let email = ""
+		if (info[4] !== "") {
+			email = `<a href="mailto:${info[4]}"><button>📧 E-Mail</button></a>`
+		}
+		let phone = ""
+		if (info[3] !== "") {
+			phone = `<a href="https://wa.me/${info[3]}?text=${info[2]}%20you%20have%20low%20attendance%20check%20{{ url_for("student", _external=True ) }}%3Fgr_no%3D${info[1]}" target="_blank">
+				<button type="button">📞 WhatsApp</button></a>
+				<a href="tel:${info[3]}"><button type="button">☎️ Call</button></a>
+				<a href="sms:${info[3]}"><button type="button">💬 SMS</button></a>
+				`
+		}
+
+		dialog.innerHTML = `<form method="dialog" >
+			<h2 style="margin-bottom: 0;">Share with:</h2>
+			${phone}${email}
+			<button
+				type="button"
+				onclick="
+					navigator.share({
+						title: '{{ config.name }}',
+						text: 'See attendance of ${info[0]}.${info[2]} on {{ config.name }}.',
+						url: '{{ url_for('student', _external=True) }}?gr_no=${info[1]}'
+					})"
+			>📤 Share</button>
+			<button style="margin: 1em 0 0 auto; display: block;" formmethod="dialog">Close</button>
+		</form>`
+
+		dialog.querySelector('form').addEventListener('click', (event) => event.stopPropagation());
+		dialog.addEventListener('click', () => dialog.close());
+		dialog.showModal();
+	}
+</script>
+{% include "comp/logout.html" %}
+{% include "comp/search.html" %}
+
+<dialog>
+</dialog>
+
+<div div id="teacher-info" style="display: flex; justify-content: center; align-items: center">
+	<img style="height: 8rem; margin-right: 1rem;" 
+		src="{{ url_for("static", filename="teacher-profile.svg") }}" 
+		alt="profile photo of teacher" />
+	<ul>
+		<li><strong>Name:</strong> {{ teacher.name }}
+		<li><strong>Date:</strong> {{ date }}
+		<li><strong>Semester-Subject:</strong>
+		<li>
+			<ul style="font-size: .8em">
+			{% for sub in teacher.subjects %}
+			{% if subject == sub %}
+			<li style="font-weight: bold">> {{ sub }} <</li>
+{% else %}
+			<li><a href="{{ url_for(request.endpoint) }}?subject={{ sub }}" class="click">{{ sub }}</a></li>
+			{% endif %}
+			{% endfor %}
+			<ul>
+		</li>
+	</ul>
+</div>
+<table>
+	<tr>
+		<th style="max-width: 3.1em; padding: .1em .3em">Roll No.
+		<th style="min-width: 10em;">Name
+		<th style="max-width: 7em; padding: .5em">Presenty
+		<th>Total</td>
+		<td style="border: none;" colspan="100">
+	</tr>
+
+	{% for student in students %}
+	<tr>
+		<td>{{ student["info"][0] }}
+		<td>
+			<a href="{{ url_for('student') }}?gr_no={{ student["info"][1] }}">{{ student["info"][2] }}</a>
+		</td>
+		<td>
+			<div 
+				style="margin: 0 auto;text-align: center;"
+				hx-target="body"
+				hx-swap="outerHTML"
+			>
+				<button 
+					hx-put="{{ url_for("teacher", gr_no=student["info"][1], subject=subject) }}"
+					{% if request.method == "PUT" and request.args.get("gr_no") == student["info"][1] %}
+					style="background: var(--green); color: black;"
+					{% endif %}
+				>+</button>
+					{{ student["result"]["today"] }}
+				<button 
+					hx-delete="{{ url_for("teacher", gr_no=student["info"][1], subject=selected_sub) }}"
+					{% if request.method == "DELETE" and request.args.get("gr_no") == student["info"][1] %}
+					style="background: var(--red); color: black;"
+					{% endif %}
+				>–</button>
+			</div>
+		</td>
+		<td>{{ student["result"]["total"] }}</td>
+		<td class="col_button">
+			<button onclick="showDilog({{ student["info"] }})">🔗</button>
+		</td>
+	</tr>
+	{% endfor %}
+</table>
+{% endblock %}

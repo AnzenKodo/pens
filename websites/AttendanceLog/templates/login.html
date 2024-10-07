@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block main %}
+<style>
+	summary {
+		font-size: 1.5em;
+		padding: .5em;
+		font-weight: bold;
+		text-align: center;
+	}
+	details {
+		margin: 0em auto;
+		max-width: 50em;
+	}
+	form {
+		padding: .8em 1em 1.5em 1em;
+	}
+	label {
+		display: block;
+		margin-bottom: .3em;
+		font-size: 1.3em;
+	}
+	input {
+		display: block;
+		margin-bottom: 1em;
+		width: 100%;
+		font-size: 1.3em;
+		border-radius: 8px;
+		padding: .4em;
+	}
+	button {
+		font-size: 1.3em;
+		padding: .3em .6em;
+		display: block;
+		margin: 0em auto;
+		color: white;
+		font-weight: bold;
+		border-radius: 8px;
+	}
+</style>
+<img style="display: block; margin: 2em auto 0 auto; height: 15em;" src="{{ config["icons"][0]["src"] }}">
+<h1 style="text-align: center; margin: 0 0 .5em 0; font-size: 3em;">{{ config.name }}</h1>
+<details open>
+    <summary style="background: var(--blue-black)">🎓 Student</summary>
+	<form method="get" action="{{ url_for("student") }}">
+		<label for="gr_no" >GR Number:</label>
+		<input name="gr_no" type="text" maxlength="6" placeholder="*See on college ID card" required/>
+		<button type="submit">Get Results</button>
+	</form>
+</details>
+<details>
+    <summary style="background: var(--yellow-black)">🧑‍🏫 Teacher</summary>
+	<form method="post" action="{{ url_for("login_teacher") }}">
+		<label for="phone_no">Phone Number:</label>
+		<input name="phone_no" type="tel" pattern="\+[0-9]{12}" value="+91" required placeholder="+919320675897"/>
+		<label for="password">Password:</label>
+		<input name="password" type="password" required/>
+		<button type="submit">Login</button>
+    </form>
+</details>
+<details>
+    <summary style="background: var(--red-black)">👨‍💼 Admin</summary>
+	<form method="post" action="{{ url_for("login_admin") }}">
+		<label for="username">Username:</label>
+		<input name="username" type="text" required/>
+		<label for="password">Password:</label>
+		<input name="password" type="password" required/>
+		<button type="submit">Login</button>
+    </form>
+</details>
+{% endblock %}

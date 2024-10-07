@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block main %}
+
+{% include "comp/logout.html" %}
+{% include "comp/search.html" %}
+
+<dialog>
+	<form method="dialog">
+		<button formmethod="dialog">Close</button>
+	</form>
+</dialog>
+
+{% include "admin/table.html" %}
+
+<style>
+	table {
+		font-size: .9rem;
+	}
+	.table_header {
+		position: sticky; 
+		top: 4.9em;
+	}
+	@media print {
+		header, footer, #student_search_box, #logout, tr:nth-child(1),
+		th:nth-child(1), td:nth-child(1), th:nth-child(2), td:nth-child(2) {
+			display: none;
+		}
+		.table_header {
+			position: static;
+			top: 0em;
+		}
+		th {
+			border: 1px solid var(--blue);
+		}
+	}
+</style>
+{% endblock %}

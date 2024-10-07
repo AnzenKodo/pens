@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<rss version="2.0">
+<channel>
+<link>https://fillyblog.vercel.app</link>
+<description>My is my Blog where I write about my own world.</description>
+<language>en-us</language>
+<copyright>@Filly Agioro under GPL 3.0</copyright>
+<author>Filly Agioro</author>
+<managingEditor>fillyagioro.perpetuana@slmail.me</managingEditor>
+<lastBuildDate>Wed 25 Nov 2020 12:24:10 PM IST</lastBuildDate>
+<item>
+<title>Markdown Guide</title>
+<link>https://fillyblog.vercel.app/posts/Markdown-Guide</link>
+<pubDate>2020-11-25</pubDate>
+</item>
+<item>
+<title>Script Blog README</title>
+<link>https://fillyblog.vercel.app/posts/Script-Blog-README</link>
+<pubDate>2020-11-25</pubDate>
+</item>
+<item>
+<title>Shell Script</title>
+<link>https://fillyblog.vercel.app/posts/Shell-Script</link>
+<pubDate>2020-11-25</pubDate>
+</item>
+</channel>
+</rss>

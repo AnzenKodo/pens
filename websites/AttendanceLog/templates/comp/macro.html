@@ -1,0 +1,7 @@
+{% macro get_percentage(value, max) -%}
+	{%- if max != 0 -%}
+	{{ (100 * value / max) | int }}
+	{%- else -%}
+	0
+	{%- endif -%}
+{%- endmacro %}

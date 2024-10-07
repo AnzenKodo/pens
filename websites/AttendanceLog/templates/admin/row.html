@@ -1,0 +1,78 @@
+{% import "comp/macro.html" as m %}
+{% import "comp/vars.html" as v %}
+<tr>
+    <td><input type="checkbox" class="selected_std" value='{{- student["info"] | tojson-}}'>
+    {% for key, value in v.ths.items() %}
+    {% if not cookies[key] %}
+
+    {% if key == "th_roll_no" %}
+	<td class="student_roll_no" style="text-align: center;">{{-student["info"][0]-}}</td>
+
+	{% elif key == "th_name" %}
+	<td class="student_name"><a href="{{ url_for('student') }}?gr_no={{ student["info"][1] }}">{{-student["info"][2]-}}</a></td>
+
+	{% elif key == "th_gr_no" %}
+	<td class="student_gr_no">{{-student["info"][1]-}}</td>
+
+	{% elif key == "th_phone_no" %}
+	<td class="student_phone_no"><a href="tel:{{ student["info"][3] }}">{{student["info"][3]}}</a>
+
+	{% elif key == "th_email" %}
+	<td class="student_email">
+		{% if student["info"][4] %}
+		<a href="mailto:{{student["info"][4]}}" class="student_email_link">{{student["info"][4]}}</a>
+		{% endif %}
+	</td>
+
+	{% elif key == "th_presenty" %}
+		{% if selected_subject != "Total" %}
+		<td class="student-presenty">
+			<div 
+				style="margin: 0 auto;text-align: center;"
+				hx-target="table"
+				hx-swap="outerHTML"
+				hx-include="[name=selected_sem], [name=selected_date], [name=selected_subject]"
+			>
+				<button hx-put="{{ url_for("admin", gr_no=student["info"][1]) }}"
+					{% if request.method == "PUT" and request.args.get("gr_no") == student["info"][1] %}
+					style="background: var(--green); color: black;"
+					{% endif %}
+				>+</button>
+				{{ student["result"]["today"] }}
+				<button hx-delete="{{ url_for("admin", gr_no=student["info"][1]) }}"
+					{% if request.method == "DELETE" and request.args.get("gr_no") == student["info"][1] %}
+					style="background: var(--red); color: black;"
+					{% endif %}
+				>–</button>
+			</div>
+		</td>
+		{% endif %}
+
+	{% elif key == "th_week" %}
+	<td class="student_week" style="text-wrap: nowrap">
+		{{ student["result"]["week"] }}
+		({{ m.get_percentage(student["result"]["week"], students_total["week"]) }}%)
+	</td>
+
+	{% elif key == "th_month" %}
+	<td class="student_month" style="text-wrap: nowrap">
+		{{ student["result"]["month"] }}
+		({{ m.get_percentage(student["result"]["month"], students_total["month"]) }}%)
+	</td>
+
+	{% elif key == "th_quarter" %}
+	<td class="student_quarter" style="text-wrap: nowrap">
+		{{ student["result"]["quarter"] }}
+		({{ m.get_percentage(student["result"]["quarter"], students_total["quarter"]) }}%)
+	</td>
+
+	{% elif key == "th_total" %}
+	<td class="student_total" style="text-wrap: nowrap">
+		{{ student["result"]["total"] }}
+		({{ m.get_percentage(student["result"]["total"], students_total["total"]) }}%)
+	</td>
+	{% endif %}
+
+	{% endif %}
+	{% endfor %}
+</tr>
