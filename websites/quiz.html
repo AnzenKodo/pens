@@ -1,0 +1,329 @@
+<div class="quiz-container"></div>
+<script>
+
+let quizData = [
+    {
+        "Question": "What is the average body temperature in Fahrenheit?",
+        "Category": "Healthcare",
+        "Formulation": "Multiple Choice",
+        "Question explanation": "",
+        "Correct answer": "2",
+        "Answer 1": "95.5",
+        "Answer 2": "98.6",
+        "Answer 3": "100.4",
+        "Answer 4": "102.2"
+    },
+    {
+        "Question": "How many bones are in the adult human body?",
+        "Category": "Healthcare",
+        "Formulation": "Multiple Choice",
+        "Question explanation": "",
+        "Correct answer": "3",
+        "Answer 1": "196",
+        "Answer 2": "206",
+        "Answer 3": "206",
+        "Answer 4": "226"
+    }
+];
+
+const quizContainer = document.querySelector('.quiz-container');
+let currentQuestionIndex = 0;
+let speechSynthesis = window.speechSynthesis;
+let speaking = false;
+let recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+let audioContext;
+let localAudio;
+let recognitionTimeout;
+
+function showStartButton() {
+  quizContainer.innerHTML = `
+    <div style="display: flex; justify-content: center; align-items: center; height: 100vh;">
+      <button id="startQuizBtn" style="padding: 16px 32px; font-size: 24px; background-color: #4CAF50; color: white; border: none; border-radius: 8px; cursor: pointer;">
+        Start Quiz
+      </button>
+    </div>
+  `;
+  document.getElementById('startQuizBtn').addEventListener('click', initializeAudioAndQuiz);
+}
+
+function initializeAudioAndQuiz() {
+  audioContext = new (window.AudioContext || window.webkitAudioContext)();
+  initializeQuiz();
+}
+
+function initializeQuiz() {
+  if (quizData.length > 0) {
+    renderQuestion(currentQuestionIndex);
+    setTimeout(readCurrentQuestion, 1000);
+  } else {
+    quizContainer.innerHTML = `<p>No quiz data available.</p>`;
+  }
+}
+
+function renderQuestion(index) {
+  const question = quizData[index];
+  const totalQuestions = quizData.length;
+
+  quizContainer.innerHTML = `
+    <div style="min-height: 100vh; background-color: #f7fafc; display: flex; align-items: center; justify-content: center; padding: 16px;">
+      <div style="width: 100%; max-width: 768px; background-color: white; border-radius: 8px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); padding: 16px;">
+        <div style="margin-bottom: 16px;">
+          <h2 style="font-size: 24px;">Question ${index + 1} of ${totalQuestions}</h2>
+        </div>
+        <div>
+          <h2 style="font-size: 20px; font-weight: 600; margin-bottom: 24px;">${question.Question}</h2>
+          <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px;">
+            ${[1, 2, 3, 4].map(num => `
+              <button class="answer-btn" data-answer="${num}" style="height: 96px; font-size: 18px; font-weight: 500; border: 1px solid #ccc; padding: 8px;">${question[`Answer ${num}`]}</button>
+            `).join('')}
+          </div>
+        </div>
+        <div style="display: flex; justify-content: space-between; margin-top: 24px;">
+          <button id="prevBtn" style="padding: 8px 16px; background-color: #e2e8f0; border: none; cursor: ${index === 0 ? 'not-allowed' : 'pointer'};" ${index === 0 ? 'disabled' : ''}>Previous</button>
+          <button id="nextBtn" style="padding: 8px 16px; background-color: #3182ce; color: white; border: none;">Next</button>
+        </div>
+        <div style="margin-top: 16px;">
+          <button id="readQuestionBtn" style="padding: 8px 16px; background-color: #48bb78; color: white; border: none;">Read Question</button>
+        </div>
+        <div id="statusMessage" style="margin-top: 16px; text-align: center;"></div>
+      </div>
+    </div>
+  `;
+
+  document.querySelectorAll('.answer-btn').forEach(btn => {
+    btn.addEventListener('click', () => selectAnswer(btn));
+  });
+
+  document.getElementById('prevBtn').addEventListener('click', showPreviousQuestion);
+  document.getElementById('nextBtn').addEventListener('click', showNextQuestion);
+  document.getElementById('readQuestionBtn').addEventListener('click', readCurrentQuestion);
+}
+
+function selectAnswer(button) {
+  document.querySelectorAll('.answer-btn').forEach(btn => {
+    btn.classList.remove('selected');
+    btn.style.backgroundColor = '';
+  });
+
+  button.classList.add('selected');
+  button.style.backgroundColor = '#4299e1';
+}
+
+function showPreviousQuestion() {
+  if (currentQuestionIndex > 0) {
+    stopSpeaking();
+    currentQuestionIndex--;
+    renderQuestion(currentQuestionIndex);
+    readCurrentQuestion();
+  }
+}
+
+function showNextQuestion() {
+  if (currentQuestionIndex < quizData.length - 1) {
+    stopSpeaking();
+    currentQuestionIndex++;
+    renderQuestion(currentQuestionIndex);
+    readCurrentQuestion();
+  } else {
+    alert('Quiz completed!');
+  }
+}
+
+function readCurrentQuestion() {
+  const question = quizData[currentQuestionIndex];
+  const textToRead = `Question ${currentQuestionIndex + 1}: ${question.Question} The options are: 1, ${question['Answer 1']}, 2, ${question['Answer 2']}, 3, ${question['Answer 3']}, 4, ${question['Answer 4']}. Please say your answer after the beep.`;
+
+  speakText(textToRead, playBeepAndListen);
+}
+
+function speakText(text, callback) {
+  if (speaking) {
+    stopSpeaking();
+  }
+
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.onend = () => {
+    speaking = false;
+    if (callback) {
+      callback();
+    }
+  };
+
+  speaking = true;
+  speechSynthesis.speak(utterance);
+}
+
+function stopSpeaking() {
+  if (speaking) {
+    speechSynthesis.cancel();
+    speaking = false;
+  }
+}
+
+function playBeepAndListen() {
+  const oscillator = audioContext.createOscillator();
+  oscillator.type = 'sine';
+  oscillator.frequency.setValueAtTime(440, audioContext.currentTime); // 440 Hz - A4 note
+  oscillator.connect(audioContext.destination);
+  oscillator.start();
+  oscillator.stop(audioContext.currentTime + 0.5); // Beep for 0.5 seconds
+
+  oscillator.onended = () => {
+    setTimeout(startVoiceRecognition, 100); // Start listening 0.5 seconds after the beep ends
+  };
+}
+
+function setupVoiceRecognition() {
+  recognition.continuous = false;
+  recognition.interimResults = true;
+  recognition.maxAlternatives = 1;
+
+  recognition.onstart = function() {
+    updateStatus('Listening for your answer...');
+    // Set a timeout to stop listening after 10 seconds
+    recognitionTimeout = setTimeout(() => {
+      recognition.stop();
+      updateStatus('No answer detected. Please try again.');
+      setTimeout(readCurrentQuestion, 2000);
+    }, 10000);
+  };
+
+  recognition.onresult = function(event) {
+    clearTimeout(recognitionTimeout);
+    const result = event.results[0];
+    if (result.isFinal) {
+      const answer = result[0].transcript.trim();
+      updateStatus(`You said: ${answer}`);
+      recognition.stop();
+      confirmAnswer(answer);
+    } else {
+      const interimTranscript = result[0].transcript;
+      updateStatus(`Hearing: ${interimTranscript}`);
+    }
+  };
+
+  recognition.onerror = function(event) {
+    clearTimeout(recognitionTimeout);
+    updateStatus('Error occurred in recognition: ' + event.error);
+    setTimeout(readCurrentQuestion, 2000);
+  };
+
+  recognition.onend = function() {
+    clearTimeout(recognitionTimeout);
+    if (!speaking) {
+      updateStatus('Listening ended.');
+    }
+  };
+}
+
+function startVoiceRecognition() {
+  if (recognition.state === 'active') {
+    recognition.stop();
+  }
+  setTimeout(() => {
+    recognition.start();
+  }, 100);
+}
+
+function confirmAnswer(answer) {
+  const confirmationText = `I heard ${answer}. Is this correct? Please say yes or no.`;
+  speakText(confirmationText, () => startConfirmationRecognition(answer));
+}
+
+function startConfirmationRecognition(originalAnswer) {
+  updateStatus('Listening for confirmation...');
+
+  const confirmationRecognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+  confirmationRecognition.continuous = false;
+  confirmationRecognition.interimResults = false;
+
+  confirmationRecognition.onresult = function(event) {
+    const last = event.results.length - 1;
+    const confirmation = event.results[last][0].transcript.trim().toLowerCase();
+
+    if (confirmation.includes('yes')) {
+      updateStatus('Answer confirmed.');
+      processVoiceAnswer(originalAnswer);
+    } else if (confirmation.includes('no')) {
+      updateStatus('Answer not confirmed. Let\'s try again.');
+      setTimeout(readCurrentQuestion, 1000);
+    } else {
+      updateStatus('I didn\'t understand. Let\'s try the question again.');
+      setTimeout(readCurrentQuestion, 1000);
+    }
+  };
+
+  confirmationRecognition.onerror = function(event) {
+    updateStatus('Error occurred in confirmation: ' + event.error);
+    setTimeout(readCurrentQuestion, 1000);
+  };
+
+  confirmationRecognition.start();
+}
+
+function startVoiceRecognition() {
+  updateStatus('Listening for your answer...');
+
+  recognition.start();
+
+  recognition.onresult = function(event) {
+    const last = event.results.length - 1;
+    const answer = event.results[last][0].transcript.trim();
+
+    updateStatus(`You said: ${answer}`);
+
+    processVoiceAnswer(answer);
+  };
+
+  recognition.onerror = function(event) {
+    updateStatus('Error occurred in recognition: ' + event.error);
+  }
+}
+
+function processVoiceAnswer(answer) {
+  const validAnswers = ['1', '2', '3', '4', 'one', 'two', 'three', 'four'];
+  const normalizedAnswer = answer.toLowerCase();
+
+  if (validAnswers.includes(normalizedAnswer)) {
+    let answerIndex;
+    switch(normalizedAnswer) {
+      case '1':
+      case 'one':
+        answerIndex = 1;
+        break;
+      case '2':
+      case 'two':
+        answerIndex = 2;
+        break;
+      case '3':
+      case 'three':
+        answerIndex = 3;
+        break;
+      case '4':
+      case 'four':
+        answerIndex = 4;
+        break;
+    }
+
+    const selectedButton = document.querySelector(`.answer-btn[data-answer="${answerIndex}"]`);
+    if (selectedButton) {
+      selectAnswer(selectedButton);
+      updateStatus(`Answer ${answerIndex} selected. Moving to next question...`);
+      setTimeout(showNextQuestion, 2000);
+    }
+  } else {
+    speakText(`You said "${answer}" Invalid answer. Please try again.`);
+    updateStatus(`You said "${answer}" Invalid answer. Please try again.`);
+    setTimeout(readCurrentQuestion, 2000);
+  }
+}
+
+function updateStatus(message) {
+  const statusElement = document.getElementById('statusMessage');
+  if (statusElement) {
+    statusElement.textContent = message;
+  }
+}
+
+showStartButton();
+</script>
