@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blockchain History</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+        }
+        .header {
+            background-color: #3498db;
+            color: white;
+            text-align: center;
+            padding: 1em;
+        }
+        .container {
+            max-width: 800px;
+            margin: 2em auto;
+            background-color: white;
+            padding: 2em;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .block {
+            border: 1px solid #ddd;
+            padding: 1em;
+            margin-bottom: 1em;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Blockchain History</h1>
+    </div>
+    <div class="container" id="blockchainContainer">
+        <!-- Blockchain data will be populated here -->
+    </div>
+
+    <script>
+        function fetchBlockchain() {
+            fetch('/api/blockchain')
+                .then(response => response.json())
+                .then(blocks => {
+                    const container = document.getElementById('blockchainContainer');
+                    container.innerHTML = '<h2>Blockchain</h2>';
+                    blocks.forEach(block => {
+                        const blockElement = document.createElement('div');
+                        blockElement.className = 'block';
+                        blockElement.innerHTML = `
+                            <h3>Block ${block.id}</h3>
+                            <p><strong>Timestamp:</strong> ${block.timestamp}</p>
+                            <p><strong>Previous Hash:</strong> ${block.previous_hash}</p>
+                            <p><strong>Hash:</strong> ${block.hash}</p>
+                            <p><strong>Nonce:</strong> ${block.nonce}</p>
+                            <p><strong>Transactions:</strong> ${block.transactions}</p>
+                        `;
+                        container.appendChild(blockElement);
+                    });
+                })
+                .catch(error => console.error('Error fetching blockchain:', error));
+        }
+
+        // Fetch blockchain when the page loads
+        document.addEventListener('DOMContentLoaded', fetchBlockchain);
+    </script>
+</body>
+</html>

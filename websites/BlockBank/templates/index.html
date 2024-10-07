@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blockchain Secured Banking</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+        }
+        .header {
+            background-color: #3498db;
+            color: white;
+            text-align: center;
+            padding: 1em;
+        }
+        .navbar {
+            background-color: #2980b9;
+            overflow: hidden;
+        }
+        .navbar a {
+            float: left;
+            display: block;
+            color: white;
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+        }
+        .navbar a:hover {
+            background-color: #1c638e;
+        }
+        .container {
+            max-width: 800px;
+            margin: 2em auto;
+            background-color: white;
+            padding: 2em;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .form-group {
+            margin-bottom: 1em;
+        }
+        label {
+            display: block;
+            margin-bottom: 0.5em;
+        }
+        input[type="text"], input[type="number"] {
+            width: 100%;
+            padding: 0.5em;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 0.5em 1em;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 2em;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 0.5em;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Blockchain Secured Banking</h1>
+    </div>
+    <div class="navbar">
+        <a href="/">Home</a>
+        <a href="/miner">Miner</a>
+        <a href="/blockchain">Blockchain</a>
+    </div>
+    <div class="container">
+        <h2>Make a Transaction</h2>
+        <form id="transactionForm">
+            <div class="form-group">
+                <label for="sender">Sender</label>
+                <input type="text" id="sender" name="sender" required>
+            </div>
+            <div class="form-group">
+                <label for="receiver">Receiver</label>
+                <input type="text" id="receiver" name="receiver" required>
+            </div>
+            <div class="form-group">
+                <label for="amount">Amount</label>
+                <input type="number" id="amount" name="amount" required>
+            </div>
+            <div class="form-group">
+                <label for="simSerial">SIM Serial Number</label>
+                <input type="text" id="simSerial" name="simSerial" required>
+            </div>
+            <button type="submit">Submit Transaction</button>
+        </form>
+
+        <h2>Transaction History</h2>
+        <table id="transactionHistory">
+            <thead>
+                <tr>
+                    <th>Sender</th>
+                    <th>Receiver</th>
+                    <th>Amount</th>
+                    <th>SIM Serial Number</th>
+                    <th>Block Number</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Transaction history will be populated here -->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        function fetchTransactions() {
+            fetch('/api/transactions')
+                .then(response => response.json())
+                .then(transactions => {
+                    const tableBody = document.querySelector('#transactionHistory tbody');
+                    tableBody.innerHTML = '';
+                    transactions.forEach(transaction => {
+                        const row = tableBody.insertRow();
+                        row.innerHTML = `
+                            <td>${transaction.sender}</td>
+                            <td>${transaction.receiver}</td>
+                            <td>${transaction.amount}</td>
+                            <td>${transaction.simSerial}</td>
+                            <td>${transaction.blockNumber || 'Unconfirmed'}</td>
+                        `;
+                    });
+                })
+                .catch(error => console.error('Error fetching transactions:', error));
+        }
+
+        document.getElementById('transactionForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const formData = {
+                sender: document.getElementById('sender').value,
+                receiver: document.getElementById('receiver').value,
+                amount: document.getElementById('amount').value,
+                simSerial: document.getElementById('simSerial').value
+            };
+
+            fetch('/api/transaction', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData),
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Success:', data);
+                this.reset();
+                fetchTransactions();  // Refresh the transaction history
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+        });
+
+        // Fetch transactions when the page loads
+        document.addEventListener('DOMContentLoaded', fetchTransactions);
+    </script>
+</body>
+</html>

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blockchain Miner</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+        }
+        .header {
+            background-color: #3498db;
+            color: white;
+            text-align: center;
+            padding: 1em;
+        }
+        .container {
+            max-width: 800px;
+            margin: 2em auto;
+            background-color: white;
+            padding: 2em;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 0.5em 1em;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        #blockInfo {
+            margin-top: 2em;
+            border: 1px solid #ddd;
+            padding: 1em;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Blockchain Miner</h1>
+    </div>
+    <div class="container">
+        <h2>Mine a New Block</h2>
+        <button id="mineButton">Mine Block</button>
+        <p id="miningStatus"></p>
+        <div id="blockInfo"></div>
+    </div>
+
+    <script>
+        document.getElementById('mineButton').addEventListener('click', function() {
+            const statusElement = document.getElementById('miningStatus');
+            const blockInfoElement = document.getElementById('blockInfo');
+            statusElement.textContent = 'Mining in progress...';
+            blockInfoElement.innerHTML = '';
+
+            fetch('/api/mine', {
+                method: 'POST',
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Success:', data);
+                statusElement.textContent = `Successfully mined block number ${data.block_number}`;
+                blockInfoElement.innerHTML = `
+                    <h3>Block Information</h3>
+                    <p><strong>Block Number:</strong> ${data.block_number}</p>
+                    <p><strong>Timestamp:</strong> ${data.timestamp}</p>
+                    <p><strong>Previous Hash:</strong> ${data.previous_hash}</p>
+                    <p><strong>Hash:</strong> ${data.hash}</p>
+                    <p><strong>Nonce:</strong> ${data.nonce}</p>
+                    <p><strong>Transactions:</strong> ${data.transactions}</p>
+                `;
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+                statusElement.textContent = 'Error occurred while mining';
+            });
+        });
+    </script>
+</body>
+</html>
