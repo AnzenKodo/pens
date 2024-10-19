@@ -1,0 +1,56 @@
+<form>
+  <label for="phone">Phone Number</label>
+  <input type="tel" name="phone" id="phone" placeholder="E.g: 7499820830" pattern="^[+]{0,1}[\d]{12}|^[\d]{10}" maxlength="13" autocomplete autofocus required>
+  <input type="button" value="Send OTP" id="send-otp" maxlength="4">
+  <br>
+
+  <span id="otp-box"></span>
+  <span id="otp-timer"></span>
+
+  <div id="rest-form" hidden>
+    <label for="name">Name</label>
+    <input id="name" placeholder="E.g: Aman Varma" name="name" pattern="[A-z\s]+" autocomplete required>
+    <br>
+
+    <label for="dob">Date of Birth</label> 
+    <input type="date" max="2022-12-31" id="dob" name="dob" autocomplete required>
+    <br>
+
+    <label for="sex">Gender</lable>
+    <select id="sex" name="sex" autocomplete required>
+      <option label>Select Your Gender</option>
+      <option value="Male">Male</option>
+      <option value="Female">Female</option>
+      <option value="Other">Other</option>
+    </select>
+    <br>
+
+    <label for="station-from">Station From</label> 
+    <input list="stations-names" id="station-from" name="station-from" placeholder="E.g: Nallasopara" required>
+    <br>
+
+    <label for="station-to">Station To</label>
+    <input list="stations-names" id="station-to" name="station-to" placeholder="E.g: Boiser" required>
+    </br>
+
+    <datalist id="stations-names" required></datalist>
+
+    <label for="class">Class</label>
+    <select id="class" name="class" required>
+      <option lable value="">Select Class</option>
+      <option value="AC">AC</option>
+      <option value="First">First</option>
+      <option value="Second">Second</option>
+    </select>
+    <br>
+
+    <input id="return" name="return" value="true" type="checkbox">
+    <label for="train-return">Return</label>
+    <br>
+
+    <input type="submit">
+  </div>
+</form>
+
+<div id="info" hidden></div>
+<script src="script.js"></script>
