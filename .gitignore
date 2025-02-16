@@ -7,6 +7,7 @@ target/
 .ipynb_checkpoints
 .gradle
 
+a.out
 *.exe
 *.out
 *.db
