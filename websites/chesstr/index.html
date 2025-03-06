@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- Primary Meta Tags -->
+    <title>DriftChess</title>
+    <meta name="title" content="DriftChess" />
+    <meta name="description" content="A chessboard powered by DriftNet" />
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://chesstr.pages.dev/" />
+    <meta property="og:title" content="DriftChess" />
+    <meta property="og:description" content="A chessboard powered by DriftNet" />
+    <meta property="og:image" content="/img/assets/chesstr_og.png" />
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="https://chesstr.pages.dev/" />
+    <meta property="twitter:title" content="DriftChess" />
+    <meta
+      property="twitter:description"
+      content="A chessboard powered by DriftNet"
+    />
+    <meta property="twitter:image" content="/img/assets/chesstr_twitter.png" />
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="img/assets/king.png" type="image/x-icon" />
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/chesstr.css" />
+    <link rel="stylesheet" href="css/chessboard-1.0.0.min.css" />
+    <!-- Lightning -->
+    <meta name="lightning" content="bordalix@coinos.io" />
+    <!-- PWA -->
+    <meta name="theme-color" content="#ffffff" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="apple-touch-icon" href="/img/assets/king-192.png" />
+  </head>
+
+  <body>
+    <script src="js/jquery-3.6.2.min.js"></script>
+    <script src="js/chessboard-1.0.0.min.js"></script>
+    <script src="js/chess-1.0.0-alpha.0.min.js"></script>
+
+    <script src="https://bitcoincore.tech/apps/bitcoinjs-ui/lib/bitcoinjs-lib.js"></script>
+    <script src="https://bundle.run/bip32@2.0.6"></script>
+    <script src="https://bundle.run/buffer@6.0.3"></script>
+    <script src="https://bundle.run/noble-secp256k1@1.2.14"></script>
+
+    <section id="chess">
+      <h1>DriftChess</h1>
+      <div id="lead">
+        <p>A chessboard powered by DriftNet</p>
+      </div>
+      <details>
+        <summary>Know more</summary>
+        <p>Just create a random url and share it with your friend.</p>
+        <p>
+          The full url is used as the seed for the private key, so the same url
+          means the same key, and the same key means the same board.
+        </p>
+        <p>
+          Using DriftNet, each client subscribe to itself, and sends an event to
+          itself when the board changes, putting them in sync.
+        </p>
+      </details>
+      <p id="status"></p>
+      <div id="topPieces" class="pieces"></div>
+      <div id="board1"></div>
+      <div id="bottomPieces" class="pieces"></div>
+      <div class="buttons">
+        <p>
+          <button id="resetGame">Reset</button>
+          <button id="flipBoard">Flip board</button>
+        </p>
+        <p>
+          <input id="gameFen" type="text" placeholder="FEN" size="10" />
+          <button id="employFen" disabled>Apply</button>
+        </p>
+      </div>
+      <div id="info">
+        <p id="relay">Connecting to nostr relays</p>
+        <p id="url"></p>
+      </div>
+    </section>
+
+    <script src="js/chesstr.js"></script>
+
+    <script>
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker
+          .register('/sw.js', { scope: '/' })
+          .then((registration) => registration.update())
+          .catch((error) => console.error(`Registration failed with ${error}`))
+      }
+    </script>
+  </body>
+</html>
