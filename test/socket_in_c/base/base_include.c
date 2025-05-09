@@ -1,6 +1,0 @@
-#include "base_mem.c"
-#include "base_string.c"
-#include "base_math.c"
-#include "base_arena.c"
-// #include "base_thread_context.c"
-// #include "ccore/base/base_fmt.c"
